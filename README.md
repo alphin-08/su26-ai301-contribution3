@@ -45,7 +45,12 @@ I did not have to do any further environment setup other than what I did for my 
 
 ### Steps to Reproduce
 
-
+1. Log in to the application as a provider account that has the prevention write privilege so you have the correct permissions to reproduce the issue.
+2. Open any patient encounter and navigate to the Preventions panel where you will find the standard form used to add a prevention.
+3. Use your browser developer tools to edit the form before you submit it so you can manipulate the hidden fields.
+4. Submit the POST request but completely omit the demographic number parameter or change the value to letters instead of numbers.
+5. Observe that the request fails with an internal server error instead of returning a validation message to the user.
+6. Check the server log to find a number format exception originating from the action file when the system tries to parse the missing or bad input.
 
 
    
@@ -53,18 +58,18 @@ I did not have to do any further environment setup other than what I did for my 
 
 - **Commit showing reproduction:** 
 - **Screenshots/logs:** Not applicable since this is a code convention issue and not a visible crash.
-- **My findings:**  
+- **My findings:** This crash is a server error and not just a style issue. The demographic number is read without any validation and passed straight into the validate method where the system tries to parse it. The Struts framework shows this unhandled exception as a server error page. Other lines in the file share this exact same problem but they only run after the initial validation passes.
 ---
 
 ## Solution Approach
 
 ### Analysis
 
-
+The root cause of the issue is that the demographic number is treated as a real input. It is read from the request and passed into the validation method without ever being checked for a missing value or incorrect format. Any missing or bad value throws an exception before any proper validation error can be recorded. The good news is that the validate method is already the perfect place to fix this problem. It returns a list of error messages and checks that list before moving forward. The user will get a clean validation message and the request will end normally if we reject a bad demographic number by adding an error to that list. This fix also protects the later code branches because they will only run if the validation method guarantees the number is valid. The codebase already has a proven pattern for this exact situation in another file called the retail preventions action. We can copy that pattern to check for missing values and ensure the input only contains digits.
 
 
 ### Proposed Solution
-
+I will match the existing solution from the other file to validate that the identifier is present and only contains digits. I will insert this new check at the very top of the validate method before the system tries to parse the integer. I will add a validation error to the returned list so the system forwards the user to a proper error screen instead of crashing. This keeps the fix small and consistent with the accepted pattern in the codebase.
 
 
 
@@ -73,19 +78,25 @@ I did not have to do any further environment setup other than what I did for my 
 Using UMPIRE framework (adapted):
 
 **Understand:** 
+A missing or bad demographic number causes the system to throw an unhandled exception that surfaces to the user as a crash. The endpoint should reject this bad input gracefully rather than crashing the system.
 
 
 **Match:**
+I will match the existing solution from the other file to validate that the identifier is present and only contains digits. I will reuse that proven pattern rather than inventing a new one.
 
 
 **Plan:** 
+I will insert a check for missing values and numbers at the top of the validate method. I will add a validation error to the returned list so the system forwards the user to a proper error screen instead of crashing. I will also confirm this early return makes the later lines safe since they only run after a successful validation.
 
 
 **Implement:** 
+I will edit the specific Java file to add the guard while keeping the change limited to that single method. I will preserve the existing copyright header and follow the security conventions of the project.
 
 **Review:**
+I will verify that the new guard runs before any parsing happens. I will confirm that no sensitive patient information is placed in the public error message.
 
 **Evaluate:**
+I will add unit tests covering missing inputs and bad formatting to ensure the system returns a validation error instead of throwing an exception. I will also manually rerun the reproduction request to confirm it works properly.
 
 
 ---
