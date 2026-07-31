@@ -4,7 +4,7 @@
 
 **Issue:** https://github.com/carlos-emr/carlos/issues/2757
 
-**Status:** Phase II
+**Status:** Phase IV
 
 ---
 
@@ -127,13 +127,15 @@ My main verification was running the unit test through the real Maven build insi
 ## Implementation Notes
 
 ### Week [1] Progress
-
+This week I focused on picking the issue and understanding it before writing any code. I read through the issue description and then read the feedback that a maintainer had left for the person who tried this issue before me. That feedback was the most useful part, because it explained exactly why the earlier attempt did not pass. The maintainer pointed out that a simple digit check is not enough, since a value that is all digits can still be too large to fit in an int and crash the same way. After I understood that, I opened the latest upstream version of the file and confirmed that the bug was still there. The unguarded parse call was still in the validate method, and there was no check in front of it, so I knew the issue was real and still worth fixing.
 
 
 ### Week [2] Progress
+This week was mostly about getting assigned and getting my environment ready. The issue had first been claimed by someone else, but they closed their own pull request, which left the issue open again for anyone to take. Because of that I had to wait for a maintainer to assign it to me before I started, since I did not want to duplicate work that someone else might still be doing. Once I was assigned, I pulled the most recent changes from upstream so I was working on top of the latest code and not an old version. After my branch was up to date, I spent time reading the validate method and the execute method around it, and I looked closely at the RtlPreventions action that the issue pointed to as the example to follow. That gave me a clear plan for how I wanted to build the fix.
 
 
-### Week [3[ Progress
+### Week [3] Progress
+This week I actually wrote the fix and the test and got everything verified. I added a small helper method that checks the value and then parses it inside a try and catch, which means a missing value, a value that is not a number, and a value that is too large for an int all return a clean result instead of crashing. This directly handled the overflow case that the earlier attempt missed, which was the main thing the maintainer asked for. I also wrote a unit test with eight cases that cover all of those situations, including the overflow and the exact boundary values. I ran the whole thing through a real Maven build inside the dev container, and all eight cases passed with a clean build. After that I opened a pull request, which is now open for maintainer feedback and ready to be merged.
 
 
 
