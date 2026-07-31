@@ -140,9 +140,9 @@ My main verification was running the unit test through the real Maven build insi
 
 ### Code Changes
 
-- **Files modified:** 
-- **Key commits:**
-- **Approach decisions:** 
+- **Files modified:** src/main/java/io/github/carlos_emr/carlos/prevention/pageUtil/AddPrevention2Action.java was modified, and a new test file named AddPrevention2ActionParseDemographicNoUnitTest.java was added in the matching test folder.
+- **Key commits:** https://github.com/alphin-08/carlos/commit/206fd74c6745f629779f9a389b546103987d37ef 
+- **Approach decisions:** I added a small helper method called parseDemographicNo instead of writing the check inline, which made it much easier to test on its own. I followed the same check then parse pattern that the RtlPreventions action already uses, and I parsed the value inside a try and catch so the overflow case is handled. I chose not to touch the two similar lines in the execute method because validate now stops the request before those lines ever run, so they are already safe.
 ---
 
 ## Pull Request
