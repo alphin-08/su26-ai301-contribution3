@@ -105,17 +105,22 @@ I will add unit tests covering missing inputs and bad formatting to ensure the s
 
 ### Unit Tests
 
-- [ ] Test case 1: 
-- [ ] Test case 2: 
-- [ ] Test case 3:
-- [ ] Test case 4:
+- [ ] Test case 1: A missing value where demographic_no is null. The helper should return null and the code should add a validation error instead of crashing.
+- [ ] Test case 2: A value that is not a number, like abc. The helper should return null so the request is rejected cleanly.
+- [ ] Test case 3: An overflow value like 99999999999 that is all digits but too large to fit in an int. This is the case a simple digit check misses, and the helper should still return null instead of throwing an error.
+- [ ] Test case 4: A normal valid id like 123. The helper should return the parsed number so the patient lookup can run.
+- [ ] Test case 5: An empty value where demographic_no is an empty string. The helper should return null so an empty field is treated the same as a missing one.
+- [ ] Test case 6: A value that mixes digits and letters, like 12a. The helper should return null because the value is not a clean number.
+- [ ] Test case 7: The value 2147483648, which is exactly one past the largest number an int can hold. The helper should return null instead of throwing an error, which is another version of the overflow case.
+- [ ] Test case 8: The value 2147483647, which is the exact largest number an int can hold. The helper should return that number, since this proves a valid value right at the edge still works correctly.
 
 ### Integration Tests
 
-
+I did not add any integration tests for this change. The fix is a small piece of validation logic inside one method, and the unit tests already cover every input case directly, so a database backed integration test would not add real value here.
 
 ### Manual Testing
 
+My main verification was running the unit test through the real Maven build inside the dev container, and it passed all eight cases. I did not do a full browser walkthrough of the reproduction steps, since the unit tests exercise the exact logic that was broken. If you want to add a browser based check later, the reproduction steps in the earlier section describe how to trigger the old crash.
 
 ---
 
