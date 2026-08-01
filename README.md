@@ -149,14 +149,18 @@ This week I actually wrote the fix and the test and got everything verified. I a
 
 ## Pull Request
 
-**PR Link:**
+**PR Link:** https://github.com/carlos-emr/carlos/pull/3300 
 
-**PR Description:** 
+**PR Description:**
 
+The validate() method in AddPrevention2Action called Integer.parseInt(demographic_no) without checking the value first. When the demographic_no request parameter is missing, request.getParameter(...) returns null, and when it is not a number, parseInt throws a NumberFormatException that nothing catches. Struts then turns that into a 500 Internal Server Error instead of showing the user a normal validation message. The same unguarded parsing also happens at lines 264 and 275 in the DHIR branch of execute().
 
-**Maintainer Feedback:** 
+This PR adds a small helper called parseDemographicNo(String). The helper first makes sure the value is there and contains only digits, and then it parses the value inside a try and catch. It returns null when the value is missing, is not a number, or is too big to fit in an int. The validate() method takes that null and adds an "Invalid or missing demographic_no" message to
+the error list instead of crashing. Since execute() sends the user back to the form whenever validate() finds any error, the parsing at lines 264 and 275 is also safe now, so those lines did not need to change.
 
-**Status:**
+**Maintainer Feedback:** N/A
+
+**Status:** Waiting for review
 
 ---
 
