@@ -4,7 +4,7 @@
 
 **Issue:** https://github.com/carlos-emr/carlos/issues/2757
 
-**Status:** Phase IV
+**Status:** Phase IV Complete
 
 ---
 
@@ -167,12 +167,14 @@ the error list instead of crashing. Since execute() sends the user back to the f
 ## Learnings & Reflections
 
 ### Technical Skills Gained
+I learned more on how to handle user input safely in Java. Before this I would have just called Integer.parseInt on a value and trusted it, but now I understand that a value can be missing, can be the wrong format, or can even be a real number that is too large to fit in an int. I learned how to guard against all three of those by checking the value first and then parsing it inside a try and catch. I also got more comfortable reading how a Struts action works, especially the way the validate method and the execute method work together and how returning an error from validate stops the request before it reaches the risky code later on. On top of that I practiced writing unit tests in JUnit. Finally, I got more hands-on experience with git and with running a Maven build inside a Docker dev container, which are things I will use on almost every future issue.
 
 
 ### Challenges Overcome
-
+The biggest challenge was not the code itself but the environment around it. My local branch had fallen behind the upstream project, and when I tried to update it the merge kept failing. It turned out that a lot of my files were owned by the root user because of how the container had written them, so my normal account could not change them. I had to take ownership of the files again before git would let me update my branch. I ran into a similar problem when I tried to run the tests, because the build could not read the git information until I marked the folder as safe inside the container.
 
 ### What I'd Do Differently Next Time
+Next time I would keep my local branch closer to the upstream project instead of letting it fall many weeks behind, since catching up all at once is where most of my trouble came from. I would also try to avoid running git commands inside the container as the root user, because that is what created the file ownership mess that blocked me for a while. On the coding side I think reading the maintainer feedback early was the right move, so I would keep doing that, but I would also try to run a small build or test even earlier in the process.
 
 
  
